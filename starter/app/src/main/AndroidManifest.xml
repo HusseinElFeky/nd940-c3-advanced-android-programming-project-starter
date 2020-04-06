@@ -12,7 +12,7 @@
 
         <activity
             android:name=".DetailActivity"
-            android:label="@string/title_activity_detail"
+            android:label="@string/label_download_result"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity

@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     private fun download() {
         val request = DownloadManager.Request(Uri.parse(URL))
             .setTitle(getString(R.string.app_name))
-            .setDescription(getString(R.string.app_description))
+            .setDescription(getString(R.string.notification_downloading))
             .setRequiresCharging(false)
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
