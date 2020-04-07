@@ -73,6 +73,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        initApp()
+        initListeners()
+    }
+
+    private fun initApp() {
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -81,7 +86,9 @@ class MainActivity : AppCompatActivity() {
                 NotificationUtils.getDownloadsChannel(this)
             )
         }
+    }
 
+    private fun initListeners() {
         option_custom_url.setOnCheckedChangeListener { _, isChecked ->
             et_custom_url.visibility = if (isChecked) {
                 View.VISIBLE

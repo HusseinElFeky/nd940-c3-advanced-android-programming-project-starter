@@ -17,12 +17,14 @@ object NotificationUtils {
 
     private const val CHANNEL_ID_DOWNLOADS = "downloads"
     private const val CHANNEL_NAME_DOWNLOADS = "Downloads"
+    private const val REQUEST_CODE_DOWNLOADS = 1000
 
     fun getDownloadsChannel(context: Context): ChannelDetails {
         return ChannelDetails(
             CHANNEL_ID_DOWNLOADS,
             CHANNEL_NAME_DOWNLOADS,
             context.getString(R.string.channel_downloads_description),
+            NotificationManager.IMPORTANCE_HIGH,
             NotificationCompat.PRIORITY_HIGH,
             NotificationCompat.VISIBILITY_PUBLIC
         )
@@ -32,7 +34,11 @@ object NotificationUtils {
     fun createNotificationChannel(context: Context, channelDetails: ChannelDetails) {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        NotificationChannel(channelDetails.id, channelDetails.name, channelDetails.priority).apply {
+        NotificationChannel(
+            channelDetails.id,
+            channelDetails.name,
+            channelDetails.importance
+        ).apply {
             enableVibration(true)
             enableLights(true)
             setShowBadge(true)
@@ -47,18 +53,18 @@ object NotificationUtils {
         context: Context,
         fileName: String,
         downloadStatus: DownloadStatus,
-        notificationId: Int
+        downloadId: Int
     ) {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val notifyIntent = Intent(context, DetailActivity::class.java)
         notifyIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        notifyIntent.putExtras(DetailActivity.withExtras(fileName, downloadStatus))
+        notifyIntent.putExtras(DetailActivity.withExtras(fileName, downloadStatus, downloadId))
 
         val pendingIntent = PendingIntent.getActivity(
             context,
-            0,
+            REQUEST_CODE_DOWNLOADS,
             notifyIntent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
@@ -89,6 +95,13 @@ object NotificationUtils {
             )
             .build()
 
-        notificationManager.notify(notificationId, notification)
+        notificationManager.notify(downloadId, notification)
+    }
+
+    fun clearNotification(context: Context, notificationId: Int) {
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        notificationManager.cancel(notificationId)
     }
 }
