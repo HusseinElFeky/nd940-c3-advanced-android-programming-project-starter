@@ -8,11 +8,13 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.udacity.loadapp.R
 import com.udacity.loadapp.models.DownloadStatus
 import com.udacity.loadapp.utils.NotificationUtils
+import com.udacity.loadapp.utils.URLUtils
 import com.udacity.loadapp.widgets.LoadingButton
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -80,6 +82,15 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        option_custom_url.setOnCheckedChangeListener { _, isChecked ->
+            et_custom_url.visibility = if (isChecked) {
+                View.VISIBLE
+            } else {
+                et_custom_url.text = null
+                View.GONE
+            }
+        }
+
         btn_download.setOnClickListener {
             when (rg_options.checkedRadioButtonId) {
                 R.id.option_load_app -> {
@@ -93,6 +104,19 @@ class MainActivity : AppCompatActivity() {
                 R.id.option_retrofit -> {
                     download(URL_RETROFIT)
                     btn_download.setState(LoadingButton.State.LOADING)
+                }
+                R.id.option_custom_url -> {
+                    val url = et_custom_url.text.toString().trim()
+                    if (URLUtils.isValidURL(url)) {
+                        download(url)
+                        btn_download.setState(LoadingButton.State.LOADING)
+                    } else {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.enter_valid_url),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
                 else -> {
                     Toast.makeText(
