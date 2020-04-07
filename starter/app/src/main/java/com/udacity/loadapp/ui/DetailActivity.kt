@@ -1,7 +1,8 @@
-package com.udacity.loadapp
+package com.udacity.loadapp.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.udacity.loadapp.R
 import kotlinx.android.synthetic.main.activity_detail.*
 
 class DetailActivity : AppCompatActivity() {
