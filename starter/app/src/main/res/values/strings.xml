@@ -3,10 +3,11 @@
     <string name="app_name">LoadApp</string>
 
     <!-- Notification -->
-    <string name="notification_downloading">Downloading</string>
-    <string name="notification_title">Udacity: Android Kotlin Nanodegree</string>
-    <string name="notification_description">Download complete</string>
-    <string name="notification_button">Check the status</string>
+    <string name="channel_downloads_description">Download files from the internet.</string>
+    <string name="downloading">Downloading</string>
+    <string name="download_complete">Download complete</string>
+    <string name="download_failed">Failed to download</string>
+    <string name="view_details">View details</string>
 
     <!-- Download Options -->
     <string name="option_load_app">LoadApp - Current repository by Udacity</string>

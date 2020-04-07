@@ -1,30 +1,27 @@
 package com.udacity.loadapp.ui
 
 import android.app.DownloadManager
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
 import com.udacity.loadapp.R
+import com.udacity.loadapp.models.DownloadStatus
+import com.udacity.loadapp.utils.NotificationUtils
 import com.udacity.loadapp.widgets.LoadingButton
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var downloadManager: DownloadManager
     private var filesIdList = mutableSetOf<Long>()
     private var filesDownloading = 0
-
-    private lateinit var notificationManager: NotificationManager
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var action: NotificationCompat.Action
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -33,7 +30,38 @@ class MainActivity : AppCompatActivity() {
                 if (--filesDownloading == 0) {
                     btn_download.setState(LoadingButton.State.NORMAL)
                 }
-                // TODO: Show a notification to notify the user that the download is complete.
+
+                val extras = intent!!.extras
+                val query = DownloadManager.Query()
+                    .setFilterById(extras!!.getLong(DownloadManager.EXTRA_DOWNLOAD_ID))
+                val cursor = downloadManager.query(query)
+
+                if (cursor.moveToFirst()) {
+                    val status = cursor.getInt(
+                        cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                    )
+                    val fileName = cursor.getString(
+                        cursor.getColumnIndex(DownloadManager.COLUMN_TITLE)
+                    )
+                    when (status) {
+                        DownloadManager.STATUS_SUCCESSFUL -> {
+                            NotificationUtils.sendDownloadNotification(
+                                this@MainActivity,
+                                fileName,
+                                DownloadStatus.SUCCESS,
+                                downloadId!!.toInt()
+                            )
+                        }
+                        DownloadManager.STATUS_FAILED -> {
+                            NotificationUtils.sendDownloadNotification(
+                                this@MainActivity,
+                                fileName,
+                                DownloadStatus.FAIL,
+                                downloadId!!.toInt()
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -44,6 +72,13 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationUtils.createNotificationChannel(
+                this,
+                NotificationUtils.getDownloadsChannel(this)
+            )
+        }
 
         btn_download.setOnClickListener {
             when (rg_options.checkedRadioButtonId) {
@@ -77,12 +112,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun download(url: String) {
         val request = DownloadManager.Request(Uri.parse(url))
-            .setDescription(getString(R.string.notification_downloading))
+            .setDescription(getString(R.string.downloading))
             .setRequiresCharging(false)
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
 
-        val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+        downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         // enqueue puts the download request in the queue.
         filesIdList.add(downloadManager.enqueue(request))
         filesDownloading++
@@ -93,7 +128,5 @@ class MainActivity : AppCompatActivity() {
             "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
         private const val URL_GLIDE = "https://github.com/bumptech/glide/archive/master.zip"
         private const val URL_RETROFIT = "https://github.com/square/retrofit/archive/master.zip"
-
-        private const val CHANNEL_ID = "downloads"
     }
 }

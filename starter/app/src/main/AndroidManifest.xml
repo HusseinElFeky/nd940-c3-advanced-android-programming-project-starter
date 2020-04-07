@@ -14,13 +14,6 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.DetailActivity"
-            android:label="@string/label_download_result"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -31,6 +24,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.DetailActivity"
+            android:label="@string/label_download_result"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:ignore="LockedOrientationActivity" />
 
     </application>
 
