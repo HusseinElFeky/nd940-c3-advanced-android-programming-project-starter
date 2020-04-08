@@ -49,17 +49,17 @@ class MainActivity : AppCompatActivity() {
                         DownloadManager.STATUS_SUCCESSFUL -> {
                             NotificationUtils.sendDownloadNotification(
                                 this@MainActivity,
-                                fileName,
+                                downloadId!!.toInt(),
                                 DownloadStatus.SUCCESS,
-                                downloadId!!.toInt()
+                                fileName
                             )
                         }
                         DownloadManager.STATUS_FAILED -> {
                             NotificationUtils.sendDownloadNotification(
                                 this@MainActivity,
-                                fileName,
+                                downloadId!!.toInt(),
                                 DownloadStatus.FAIL,
-                                downloadId!!.toInt()
+                                fileName
                             )
                         }
                     }

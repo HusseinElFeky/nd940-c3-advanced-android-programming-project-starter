@@ -51,16 +51,16 @@ object NotificationUtils {
 
     fun sendDownloadNotification(
         context: Context,
-        fileName: String,
+        downloadId: Int,
         downloadStatus: DownloadStatus,
-        downloadId: Int
+        fileName: String
     ) {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val notifyIntent = Intent(context, DetailActivity::class.java)
         notifyIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        notifyIntent.putExtras(DetailActivity.withExtras(fileName, downloadStatus, downloadId))
+        notifyIntent.putExtras(DetailActivity.withExtras(downloadId, downloadStatus, fileName))
 
         val pendingIntent = PendingIntent.getActivity(
             context,
