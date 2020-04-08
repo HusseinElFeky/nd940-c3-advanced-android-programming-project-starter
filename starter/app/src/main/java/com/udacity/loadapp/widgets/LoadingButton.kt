@@ -93,6 +93,9 @@ class LoadingButton @JvmOverloads constructor(
     private val textRect = Rect()
     private var textToDraw = context.getString(buttonState.getTextId()).toUpperCase(Locale.ENGLISH)
 
+    private val cornerPath = Path()
+    private val cornerRadius = 4.dpToPx().toFloat()
+
     private var textColor = Color.WHITE
     private var primaryBackgroundColor = context.getColor(R.color.colorPrimary)
     private var secondaryBackgroundColor = context.getColor(R.color.colorPrimaryDark)
@@ -133,6 +136,12 @@ class LoadingButton @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas?.let {
+            // Save canvas
+            it.save()
+
+            // Clip canvas corners to form a rounded button
+            it.clipPath(cornerPath)
+
             // Draw button background color
             it.drawColor(primaryBackgroundColor)
 
@@ -177,6 +186,9 @@ class LoadingButton @JvmOverloads constructor(
             // Draw button text
             paint.color = textColor
             it.drawText(textToDraw, textX - textOffset, textY, paint)
+
+            // Restore saved canvas
+            it.restore()
         }
     }
 
@@ -196,6 +208,21 @@ class LoadingButton @JvmOverloads constructor(
         val w = resolveSizeAndState(minW, widthMeasureSpec, 1)
         val h = resolveSizeAndState(minH, heightMeasureSpec, 1)
         setMeasuredDimension(w, h)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        cornerPath.reset()
+        cornerPath.addRoundRect(
+            0f,
+            0f,
+            w.toFloat(),
+            h.toFloat(),
+            cornerRadius,
+            cornerRadius,
+            Path.Direction.CW
+        )
+        cornerPath.close()
     }
 
     fun setState(buttonState: State) {
